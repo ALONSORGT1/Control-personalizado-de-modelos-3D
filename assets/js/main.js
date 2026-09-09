@@ -89,6 +89,31 @@ let model;
 
 let mixer;
 
+// El grupo gira al personaje completo sin interferir con sus animaciones.
+const characterRoot = new THREE.Group();
+scene.add(characterRoot);
+const turnSpeed = Math.PI; // 180 grados por segundo.
+const turningKeys = new Set();
+
+window.addEventListener('keydown', (event) => {
+  if (event.code === 'ArrowLeft' || event.code === 'ArrowRight') {
+    event.preventDefault();
+    turningKeys.add(event.code);
+  }
+});
+
+window.addEventListener('keyup', (event) => {
+  if (event.code === 'ArrowLeft' || event.code === 'ArrowRight') {
+    event.preventDefault();
+    turningKeys.delete(event.code);
+  }
+});
+
+window.addEventListener('blur', () => turningKeys.clear());
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) turningKeys.clear();
+});
+
 
 
 
@@ -149,7 +174,7 @@ loader.load('./assets/models/character.fbx', async (fbx) => {
   });
 
 
-  scene.add(model);
+  characterRoot.add(model);
 
   mixer = new THREE.AnimationMixer(model);
   animations = new ContinuousAnimations(mixer);
@@ -189,6 +214,11 @@ function animate() {
   const delta = Math.min(clock.getDelta(), 0.05);
 
   if (animations) animations.update(delta);
+
+  if (model) {
+    const direction = Number(turningKeys.has('ArrowLeft')) - Number(turningKeys.has('ArrowRight'));
+    characterRoot.rotation.y += direction * turnSpeed * delta;
+  }
 
   controls.update();
 

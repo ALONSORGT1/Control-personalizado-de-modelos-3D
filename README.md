@@ -41,6 +41,10 @@ assets/
 | 4 | Hurricane Kick |
 | 5 | Standing 2H Magic Attack 01 |
 | 6 | Strafing |
+| ← | Girar al personaje a la izquierda |
+| → | Girar al personaje a la derecha |
+
+Mantén presionada una flecha para girar al personaje sobre su eje vertical. Al soltarla, el giro se detiene y conserva la orientación. Las dos flechas juntas cancelan el giro. La animación continúa durante el giro y la cámara se mantiene independiente.
 
 Arrastra con el botón izquierdo para rotar la cámara, usa la rueda para acercar o alejar y el botón derecho para desplazar la vista. Body Block se reproduce al terminar la carga. Las teclas cambian la animación; no controlan la posición del personaje por el escenario.
 
