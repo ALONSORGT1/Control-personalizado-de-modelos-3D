@@ -3,6 +3,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 import { FBXLoader } from 'three/addons/loaders/FBXLoader.js';
+import { ContinuousAnimations } from './animation-controller.js';
 
 
 const scene = new THREE.Scene();
@@ -82,13 +83,13 @@ const loader = new FBXLoader();
 
 const clock = new THREE.Clock();
 
-const actions = {};
+let animations;
 
 let model;
 
 let mixer;
 
-let currentAction;
+
 
 
 const animationFiles = {
@@ -109,7 +110,7 @@ function loadAnimation(name, url) {
 
       const clip = fbx.animations[0];
 
-      actions[name] = mixer.clipAction(clip);
+      animations.add(name, clip);
 
       resolve();
 
@@ -121,34 +122,10 @@ function loadAnimation(name, url) {
 
 
 function playAction(name) {
-
-  const nextAction = actions[name];
-
-  if (!nextAction || nextAction === currentAction) return;
-
-
-  if (currentAction) currentAction.fadeOut(0.25);
-
-
-  nextAction
-
-    .reset()
-
-    .setEffectiveTimeScale(1)
-
-    .setEffectiveWeight(1)
-
-    .fadeIn(0.25)
-
-    .play();
-
-
-  currentAction = nextAction;
-
-  document.getElementById('animation-name').textContent = name.toUpperCase();
-
+  if (animations?.select(name)) {
+    document.getElementById('animation-name').textContent = name.toUpperCase();
+  }
 }
-
 
 loader.load('./assets/models/character.fbx', async (fbx) => {
 
@@ -175,6 +152,7 @@ loader.load('./assets/models/character.fbx', async (fbx) => {
   scene.add(model);
 
   mixer = new THREE.AnimationMixer(model);
+  animations = new ContinuousAnimations(mixer);
 
 
   await Promise.all(
@@ -208,9 +186,9 @@ window.addEventListener('keydown', (event) => {
 
 function animate() {
 
-  const delta = clock.getDelta();
+  const delta = Math.min(clock.getDelta(), 0.05);
 
-  if (mixer) mixer.update(delta);
+  if (animations) animations.update(delta);
 
   controls.update();
 
