@@ -1,0 +1,44 @@
+name: Publicar en GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Obtener el proyecto
+        uses: actions/checkout@v4
+      - name: Configurar Pages
+        uses: actions/configure-pages@v5
+      - name: Preparar el sitio y reconstruir el personaje
+        shell: bash
+        run: |
+          mkdir -p _site/assets/models
+          cp index.html _site/
+          cp -R assets/css assets/js _site/assets/
+          cp -R assets/models/animations _site/assets/models/
+          cat assets/models/character.fbx.part01 assets/models/character.fbx.part02 > _site/assets/models/character.fbx
+          echo "b88b515d9ea940a3c9a548ff02b6bf90074be4a080a43cf3b0d743f9e3bec2a0  _site/assets/models/character.fbx" | sha256sum --check
+          touch _site/.nojekyll
+      - name: Empaquetar el sitio
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - name: Publicar
+        id: deployment
+        uses: actions/deploy-pages@v4
