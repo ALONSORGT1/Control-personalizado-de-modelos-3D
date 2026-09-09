@@ -2,9 +2,6 @@
 
 Práctica 1.3 de Desarrollo de soluciones en ambientes virtuales. Aplicación web con Three.js que muestra un personaje FBX, iluminación, sombras y una cámara interactiva. Permite seleccionar seis animaciones con el teclado y realizar transiciones suaves entre ellas.
 
-**Alumno:** ALONSO RAMREZ G  
-**Número de control:** 22200790
-
 ## Ver el proyecto
 
 https://alonsorgt1.github.io/Control-personalizado-de-modelos-3D/
